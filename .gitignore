@@ -1,0 +1,40 @@
+# Eclipse specific files
+.project
+.classpath
+.settings/
+bin/
+target/
+
+# Java specific files
+*.class
+*.jar
+*.war
+*.ear
+
+# Maven specific files
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Logs
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IntelliJ specific files (in case of multi-IDE usage)
+.idea/
+*.iml
+
+# Eclipse JDT specific files
+.recommenders/
+
+# Built files
+out/
+
+# Others
+*.swp
+*.tmp
