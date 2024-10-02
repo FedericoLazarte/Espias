@@ -9,7 +9,7 @@ public class Espia implements Comparable<Espia>{
 	private String nombre;
 	private Coordinate coordenada;
 	private ArrayList<Espia> espiasCercanos;
-	
+
 	public Espia(String nombre, Coordinate coordenada) {
 		this.nombre = nombre;
 		this.coordenada = coordenada;
@@ -18,15 +18,15 @@ public class Espia implements Comparable<Espia>{
 	public void agregarEspiasCeranos(Espia...espias) {
 		this.espiasCercanos.addAll(Arrays.asList(espias));
 	}
-	
+
 	public String obtenerNombreEspia() {
 		return this.nombre;
 	}
-	
+
 	public Coordinate obtenerCoordenadaEspia() {
 		return this.coordenada;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder infoEspia = new StringBuilder();
@@ -50,9 +50,9 @@ public class Espia implements Comparable<Espia>{
 		}
 		return a;
 	}
-	
+
 	public ArrayList<Espia> obtenerEspiasCercanos() {
 		return this.espiasCercanos;
 	}
-	
+
 }
