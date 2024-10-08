@@ -1,6 +1,9 @@
 package logica;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class BFS <T extends Comparable<T>>{
 
@@ -9,7 +12,7 @@ public class BFS <T extends Comparable<T>>{
 	private Grafo<T> grafo;
 
 	public static <T extends Comparable<T>> boolean esConexo(Grafo<T> g) {
-		return new BFS<T>(g).esConexo();
+		return new BFS<>(g).esConexo();
 	}
 
 	private BFS(Grafo<T> grafo) {

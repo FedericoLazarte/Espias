@@ -16,6 +16,9 @@ import interfaz.Main;
 import logica.Arista;
 import logica.Espia;
 import logica.Grafo;
+import logica.AGMKruscal;
+import logica.AGMPrim;
+import logica.AbstractAGM;
 
 public class Controlador {
 	private Main vista;
@@ -35,17 +38,41 @@ public class Controlador {
 
 	private void mostrarMapaConGrafo(Set<Arista<Espia>> aristas) {
 		limpiarMapa();
-		for (Espia e : this.espias)
+		for (Espia e : this.espias) {
 			mostrarPunto(vista.getMapViewer(), e.obtenerCoordenadaEspia(), e.toString(), Color.YELLOW);
-		for (Arista<Espia> ar : aristas)
+		}
+		for (Arista<Espia> ar : aristas) {
 			graficarArista(vista.getMapViewer(), ar);
+		}
+	}
+	
+	public long[] compararAlgoritmos() {
+		AbstractAGM<Espia> algoritmoKruskal = new AGMKruscal<Espia>(grafo);
+		AbstractAGM<Espia> algoritmoPrim = new AGMPrim<Espia>(grafo);
+		
+		long resultados[] = new long[2];
+		resultados[0] = algoritmoKruskal.tiempoEjecucionEnNanoSegundos();
+		resultados[1] = algoritmoPrim.tiempoEjecucionEnNanoSegundos();
+		
+		return resultados;
 	}
 
-	public boolean dibujarAGM() {
+	public boolean dibujarAGM(Algoritmo_AGM algoritmoAGM) {
 		try {
-			this.aristasAGM = grafo.aristasDelAGM();
+			AbstractAGM<Espia> agmGenerator;
+
+			switch(algoritmoAGM) {
+			case PRIM:
+				agmGenerator = new AGMPrim<>(grafo); break;
+			case KRUSKAL:
+				agmGenerator = new AGMKruscal<>(grafo); break;
+			default:
+				throw new IllegalArgumentException("Algoritmo no cargado");
+			}
+			this.aristasAGM = grafo.aristasDelAGM(agmGenerator);
 			limpiarMapa();
 			mostrarMapaConGrafo(this.aristasAGM);
+			System.out.println("tiempo de ejecucion = " + agmGenerator.tiempoEjecucionEnNanoSegundos());
 			return true;
 		} catch (GrafoNoConexoException e) {
 			vista.mostrarAlerta("El grafo aún no es conexo, añada más aristas");
@@ -99,8 +126,9 @@ public class Controlador {
 
 	private void mostrarPunto(JMapViewer map, Coordinate c, String texto, Color color) {
 		MapMarkerDot punto = new MapMarkerDot(c);
-		if (texto != null)
+		if (texto != null) {
 			punto.setName(texto);
+		}
 		punto.setBackColor(color);
 		map.addMapMarker(punto);
 	}
@@ -143,13 +171,15 @@ public class Controlador {
 		inicializarAristas();
 		for (Espia e : this.espias) {
 			for (Espia e2 : this.espias) {
-				if (e.equals(e2))
+				if (e.equals(e2)) {
 					continue;
+				}
 				//double peso = (double) new java.util.Random().nextInt(1, 100);
 				double peso = Math.random();
 				Arista<Espia> ar = new Arista<>(e, e2, peso);
-				if (agregarArista(ar))
+				if (agregarArista(ar)) {
 					this.grafo.agregarAristaEntreVertices(e2, e, peso);
+				}
 			}
 		}
 		grafo = new Grafo<>(this.espias, this.aristasG);
@@ -162,10 +192,16 @@ public class Controlador {
 //				double peso = (double) new java.util.Random().nextDouble(0, 1);
 				double peso = Math.random();
 				Arista<Espia> ar = new Arista<>(e, e2, peso);
-				if (agregarArista(ar))
+				if (agregarArista(ar)) {
 					grafo.agregarAristaEntreVertices(e, e2, peso);
+				}
 			}
 		}
 		mostrarMapaConGrafo();
+	}
+
+	public static enum Algoritmo_AGM {
+		PRIM,
+		KRUSKAL
 	}
 }

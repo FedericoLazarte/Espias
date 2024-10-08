@@ -1,29 +1,26 @@
 package logica;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.TreeSet;
 
 import excepcion.GrafoNoConexoException;
+import logica.Arista;
+import logica.Grafo;
 
-public class AGM<T extends Comparable<T>>{
+public class AGMKruscal<T extends Comparable<T>> extends AbstractAGM<T> {
 
-	private TreeMap<T, TreeSet<Arista<T>>> adjList;
-	private TreeSet<Arista<T>> aristasConExtremoFuera;
-	private TreeSet<Arista<T>> aristasDelAGM;
-	private List<T> verticesConAristasPotenciales;
-	private Grafo<T> g;
 
-	public AGM(Grafo<T> g) {
-		this.g = g;
-		algoritmoAGM();
+	public AGMKruscal(Grafo<T> g) {
+		super(g);
 	}
 
+	@Override
 	public TreeSet<Arista<T>> aristasDelAGM() {
+		algoritmoAGM();
 		return aristasDelAGM;
 	}
 
-	public Grafo<T> AGMdelGrafo() {
-		return new Grafo<>(verticesConAristasPotenciales,aristasDelAGM);
-	}
+
 
 	private void inicializarObjetosUtiles() {
 		adjList = g.listaDeAdyacencias();
@@ -36,8 +33,9 @@ public class AGM<T extends Comparable<T>>{
 	// creo de sería de kruskal
 	private void algoritmoAGM() {
 
-		if (!g.esConexo())
+		if (!g.esConexo()) {
 			throw new GrafoNoConexoException();
+		}
 
 		inicializarObjetosUtiles();
 
@@ -65,16 +63,4 @@ public class AGM<T extends Comparable<T>>{
 			}
 		}
 	}
-
-	private void descartarAristasQueGenerarianCiclos() {
-		Set<Arista<T>> aristasParaDescartar = new HashSet<>();
-		for (Arista<T> arista: aristasConExtremoFuera) {
-			if (verticesConAristasPotenciales.contains(arista.obtenerVerticeInicio())
-			&& verticesConAristasPotenciales.contains(arista.obtenerVerticeDestino())) {
-				aristasParaDescartar.add(arista);
-			}
-		}
-		aristasConExtremoFuera.removeAll(aristasParaDescartar);
-	}
-
 }
