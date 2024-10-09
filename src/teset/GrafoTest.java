@@ -11,7 +11,7 @@ import logica.Grafo;
 
 public class GrafoTest {
 
-    private Grafo<String> grafo;
+	private Grafo<String> grafo;
 
     @Before
     public void setUp() {
@@ -66,7 +66,7 @@ public class GrafoTest {
         grafo.agregarVertice("B");
         grafo.agregarVertice("C");
         grafo.agregarVertice("D");
-        grafo.agregarAristaEntreVertices("A", "B", 10.0);
+        grafo.agregarAristaEntreVertices("A", "B", -10.0);
     }
 
     
