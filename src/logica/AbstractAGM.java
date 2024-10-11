@@ -12,14 +12,14 @@ import logica.Grafo;
 
 public abstract class AbstractAGM <T extends Comparable<T>>
 {
-	protected TreeMap<T, TreeSet<Arista<T>>> adjList;
+	protected TreeMap<T, TreeSet<Arista<T>>> listaDeAdj;
 	protected TreeSet<Arista<T>> aristasConExtremoFuera;
 	protected TreeSet<Arista<T>> aristasDelAGM;
 	protected List<T> verticesConAristasPotenciales;
-	protected Grafo<T> g;
+	protected Grafo<T> grafo;
 
-	public AbstractAGM(Grafo<T> g) {
-		this.g = g;
+	public AbstractAGM(Grafo<T> grafo) {
+		this.grafo = grafo;
 	}
 
 	public abstract TreeSet<Arista<T>> aristasDelAGM();

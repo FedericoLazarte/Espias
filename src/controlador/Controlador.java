@@ -16,7 +16,7 @@ import interfaz.Main;
 import logica.Arista;
 import logica.Espia;
 import logica.Grafo;
-import logica.AGMKruscal;
+import logica.AGMKruskal;
 import logica.AGMPrim;
 import logica.AbstractAGM;
 
@@ -47,7 +47,7 @@ public class Controlador {
 	}
 	
 	public long[] compararAlgoritmos() {
-		AbstractAGM<Espia> algoritmoKruskal = new AGMKruscal<Espia>(grafo);
+		AbstractAGM<Espia> algoritmoKruskal = new AGMKruskal<Espia>(grafo);
 		AbstractAGM<Espia> algoritmoPrim = new AGMPrim<Espia>(grafo);
 		
 		long resultados[] = new long[2];
@@ -65,7 +65,7 @@ public class Controlador {
 			case PRIM:
 				agmGenerator = new AGMPrim<>(grafo); break;
 			case KRUSKAL:
-				agmGenerator = new AGMKruscal<>(grafo); break;
+				agmGenerator = new AGMKruskal<>(grafo); break;
 			default:
 				throw new IllegalArgumentException("Algoritmo no cargado");
 			}

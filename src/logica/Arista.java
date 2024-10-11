@@ -11,9 +11,7 @@ public class Arista <T extends Comparable<T>> implements Comparable<Arista<T>>{
 	public Arista(T verticeInicio, T VerticeDestino, double peso) {
 		this.verticeInicio = verticeInicio;
 		this.verticeDestino = VerticeDestino;
-	//	pesoValido(peso);
 		this.peso = peso;
-
 	}
 
 	public T obtenerVerticeInicio() {
@@ -28,12 +26,16 @@ public class Arista <T extends Comparable<T>> implements Comparable<Arista<T>>{
 		return this.peso;
 	}
 
+	public void cambiarPeso(double nuevoPeso) {
+		pesoValido(nuevoPeso);
+		this.peso = nuevoPeso;
+	}
+	
 	@Override
-	public boolean equals(Object o) {
-		if (o instanceof Arista) {
-			Arista<?> a = (Arista<?>) o;
-			return sonSimilares(a);
-//			return sonIguales(a);
+	public boolean equals(Object objeto) {
+		if (objeto instanceof Arista) {
+			Arista<?> arista = (Arista<?>) objeto;
+			return sonSimilares(arista);
 		}
 
 		return false;
@@ -44,17 +46,20 @@ public class Arista <T extends Comparable<T>> implements Comparable<Arista<T>>{
 		return Objects.hash(verticeInicio) + Objects.hash(verticeDestino);
 	}
 
-	private boolean sonIguales(Arista<?> a) {
-		return this.verticeInicio.equals(a.verticeInicio)
-				&& this.verticeDestino.equals(a.verticeDestino);
+	@Override
+	public int compareTo(Arista<T> otraArista) {
+		int comparacion;
+		if (this.peso != otraArista.peso) {
+			comparacion = Double.compare(this.peso, otraArista.peso);
+		}
+		else if (!this.verticeInicio.equals(otraArista.verticeInicio)) {
+			comparacion = this.verticeInicio.compareTo(otraArista.verticeInicio);
+		} else {
+			comparacion = this.verticeDestino.compareTo(otraArista.verticeDestino);
+		}
+		return comparacion;
 	}
-
-	private boolean sonSimilares(Arista<?> a) {
-		return sonIguales(a) ||
-				(this.verticeInicio.equals(a.verticeDestino)
-						&& this.verticeDestino.equals(a.verticeInicio));
-	}
-
+	
 	@Override
 	public String toString() {
 		return "(" + this.verticeInicio + ")--" + this.peso + "-->(" + this.verticeDestino + ")";
@@ -68,24 +73,16 @@ public class Arista <T extends Comparable<T>> implements Comparable<Arista<T>>{
 			}
 		};
 	}
-
-	@Override
-	public int compareTo(Arista<T> ar) {
-		int a;
-		if (this.peso != ar.peso) {
-			a = Double.compare(this.peso, ar.peso);
-		}
-		else if (!this.verticeInicio.equals(ar.verticeInicio)) {
-			a = this.verticeInicio.compareTo(ar.verticeInicio);
-		} else {
-			a = this.verticeDestino.compareTo(ar.verticeDestino);
-		}
-		return a;
+	
+	private boolean sonSimilares(Arista<?> otraArista) {
+		return sonIguales(otraArista) ||
+				(this.verticeInicio.equals(otraArista.verticeDestino)
+						&& this.verticeDestino.equals(otraArista.verticeInicio));
 	}
-
-	public void cambiarPeso(double nuevoPeso) {
-		pesoValido(nuevoPeso);
-		this.peso = nuevoPeso;
+	
+	private boolean sonIguales(Arista<?> a) {
+		return this.verticeInicio.equals(a.verticeInicio)
+				&& this.verticeDestino.equals(a.verticeDestino);
 	}
 
 	private boolean pesoValido(double peso) {

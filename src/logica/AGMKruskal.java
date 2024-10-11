@@ -7,45 +7,44 @@ import excepcion.GrafoNoConexoException;
 import logica.Arista;
 import logica.Grafo;
 
-public class AGMKruscal<T extends Comparable<T>> extends AbstractAGM<T> {
+public class AGMKruskal<T extends Comparable<T>> extends AbstractAGM<T> {
 
-
-	public AGMKruscal(Grafo<T> g) {
+	public AGMKruskal(Grafo<T> g) {
 		super(g);
 	}
 
 	@Override
 	public TreeSet<Arista<T>> aristasDelAGM() {
-		algoritmoAGM();
+		algoritmoAGM(); // Ejecuta el algoritmo para generar el AGM
 		return aristasDelAGM;
 	}
 
-
-
-	private void inicializarObjetosUtiles() {
-		adjList = g.listaDeAdyacencias();
-		aristasConExtremoFuera = new TreeSet<>(Arista.aristaComparator());
-		aristasDelAGM = new TreeSet<>();
-		verticesConAristasPotenciales = new ArrayList<>();
-		verticesConAristasPotenciales.add(g.primerVertice());
-	}
-
-	// creo de sería de kruskal
+	// Algoritmo de Kruskal
 	private void algoritmoAGM() {
-
-		if (!g.esConexo()) {
+		// Primero verificamos que el grafo sea conexo
+		if (!grafo.esConexo()) {
 			throw new GrafoNoConexoException();
 		}
 
+		// Inicializamos las estructuras de datos
 		inicializarObjetosUtiles();
 
-		while (verticesConAristasPotenciales.size() != g.tamanio()) {
+		// Mientras no tengamos todos los vértices en el AGM
+		while (verticesConAristasPotenciales.size() != grafo.tamanio()) {
 			agregarAristasConExtremos();
 			Arista<T> aristaMenorPeso = obtenerAristaDeMenorPesoEntreLasPosibles();
 			verticesConAristasPotenciales.add(aristaMenorPeso.obtenerVerticeDestino());
 			aristasDelAGM.add(aristaMenorPeso);
 			descartarAristasQueGenerarianCiclos();
 		}
+	}
+	
+	private void inicializarObjetosUtiles() {
+		listaDeAdj = grafo.listaDeAdyacencias();
+		aristasConExtremoFuera = new TreeSet<>(Arista.aristaComparator());
+		aristasDelAGM = new TreeSet<>();
+		verticesConAristasPotenciales = new ArrayList<>();
+		verticesConAristasPotenciales.add(grafo.primerVertice());
 	}
 
 	private Arista<T> obtenerAristaDeMenorPesoEntreLasPosibles() {
@@ -54,7 +53,7 @@ public class AGMKruscal<T extends Comparable<T>> extends AbstractAGM<T> {
 
 	private void agregarAristasConExtremos() {
 		for (T vertice: verticesConAristasPotenciales) {
-			for (Arista<T> arista: adjList.get(vertice)) {
+			for (Arista<T> arista: listaDeAdj.get(vertice)) {
 				if (!aristasDelAGM.contains(arista) &&
 				!verticesConAristasPotenciales.contains(arista.obtenerVerticeDestino()))
 				{

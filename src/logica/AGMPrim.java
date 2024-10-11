@@ -3,6 +3,7 @@ package logica;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
+import excepcion.GrafoNoConexoException;
 import logica.Arista;
 import logica.Grafo;
 
@@ -20,11 +21,16 @@ public class AGMPrim<T extends Comparable<T>> extends AbstractAGM<T> {
 
     // Algoritmo de Prim
     private void algoritmoAGM() {
+    	// Primero verificamos que el grafo sea conexo
+    	if (!grafo.esConexo()) {
+			throw new GrafoNoConexoException();
+		}
+    	
         // Inicializamos las estructuras de datos
         inicializarObjetosUtiles();
 
         // Mientras no tengamos todos los vértices en el AGM
-        while (verticesConAristasPotenciales.size() != g.tamanio()) {
+        while (verticesConAristasPotenciales.size() != grafo.tamanio()) {
             agregarAristasConExtremos();
             Arista<T> aristaMenorPeso = obtenerAristaDeMenorPesoEntreLasPosibles();
 
@@ -41,17 +47,17 @@ public class AGMPrim<T extends Comparable<T>> extends AbstractAGM<T> {
 
     // Inicializa los objetos necesarios para ejecutar el algoritmo
     private void inicializarObjetosUtiles() {
-        adjList = g.listaDeAdyacencias();
+        listaDeAdj = grafo.listaDeAdyacencias();
         aristasConExtremoFuera = new TreeSet<>(Arista.aristaComparator());
         aristasDelAGM = new TreeSet<>();
         verticesConAristasPotenciales = new ArrayList<>();
-        verticesConAristasPotenciales.add(g.primerVertice()); // Comenzamos con el primer vértice
+        verticesConAristasPotenciales.add(grafo.primerVertice()); // Comenzamos con el primer vértice
     }
 
     // Agrega las aristas cuyo extremo está fuera del conjunto de vértices visitados
     private void agregarAristasConExtremos() {
         for (T vertice : verticesConAristasPotenciales) {
-            for (Arista<T> arista : adjList.get(vertice)) {
+            for (Arista<T> arista : listaDeAdj.get(vertice)) {
                 if (!aristasDelAGM.contains(arista) &&
                     !verticesConAristasPotenciales.contains(arista.obtenerVerticeDestino())) {
                     aristasConExtremoFuera.add(arista); // Agregamos aristas con un vértice no visitado

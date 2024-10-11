@@ -7,25 +7,25 @@ import java.util.TreeSet;
 import org.junit.Test;
 
 import excepcion.GrafoNoConexoException;
-import logica.AGMKruskal;
+import logica.AGMPrim;
 import logica.Arista;
 import logica.Grafo;
 
-public class AGMKruskalTest {
+public class AGMPrimTest {
 
 	 @Test(expected = GrafoNoConexoException.class)
 	    public void testGrafoNoConexoLanzaExcepcion() {
 	        Grafo<Integer> grafoNoConexo = new Grafo<>(1, 2, 3, 4);
 	        grafoNoConexo.agregarAristaEntreVertices(1, 2, 1);
 	        grafoNoConexo.agregarAristaEntreVertices(3, 4, 1);
-	        AGMKruskal agm = new AGMKruskal(grafoNoConexo);
+	        AGMPrim agm = new AGMPrim(grafoNoConexo);
 	        agm.aristasDelAGM();
 	    }
 
 	    @Test
 	    public void testGrafoUnVertice() {
 	        Grafo<Integer> grafoUnVertice = new Grafo<>(1);
-	        AGMKruskal<Integer> agm = new AGMKruskal<>(grafoUnVertice);
+	        AGMPrim<Integer> agm = new AGMPrim<>(grafoUnVertice);
 
 	        assertTrue(agm.aristasDelAGM().isEmpty());
 	    }
@@ -37,7 +37,7 @@ public class AGMKruskalTest {
 	        grafoConexo.agregarAristaEntreVertices(2, 3, 0.5);
 	        grafoConexo.agregarAristaEntreVertices(1, 3, 0.5);
 
-	        AGMKruskal<Integer> agm = new AGMKruskal<>(grafoConexo);
+	        AGMPrim<Integer> agm = new AGMPrim<>(grafoConexo);
 	        TreeSet<Arista<Integer>> aristasAGM = agm.aristasDelAGM();
 
 	        assertEquals(2, aristasAGM.size());
@@ -50,7 +50,7 @@ public class AGMKruskalTest {
 	        grafoConPesoIgual.agregarAristaEntreVertices(2, 3, 1);
 	        grafoConPesoIgual.agregarAristaEntreVertices(1, 3, 1);
 
-	        AGMKruskal<Integer> agm = new AGMKruskal<>(grafoConPesoIgual);
+	        AGMPrim<Integer> agm = new AGMPrim<>(grafoConPesoIgual);
 	        TreeSet<Arista<Integer>> aristasAGM = agm.aristasDelAGM();
 
 	        assertEquals(2, aristasAGM.size());

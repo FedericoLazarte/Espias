@@ -79,30 +79,30 @@ public class EspiasHarcodeado {
     
     private static void agregarEspiasCeranos() {
         // Suponiendo que 'espias' tiene al menos 24 elementos
-        espias.get(0).agregarEspiasCeranos(espias.get(1), espias.get(5), espias.get(7), espias.get(11), espias.get(15), espias.get(20));
-        espias.get(1).agregarEspiasCeranos(espias.get(0));
-        espias.get(2).agregarEspiasCeranos(espias.get(5), espias.get(10), espias.get(16), espias.get(21), espias.get(23));
-        espias.get(3).agregarEspiasCeranos(espias.get(6), espias.get(8), espias.get(16), espias.get(20), espias.get(21));
-        espias.get(4).agregarEspiasCeranos(espias.get(15), espias.get(19));
-        espias.get(5).agregarEspiasCeranos(espias.get(0), espias.get(2), espias.get(11), espias.get(10), espias.get(18), espias.get(20), espias.get(21));
-        espias.get(6).agregarEspiasCeranos(espias.get(3), espias.get(7), espias.get(13), espias.get(20));
-        espias.get(7).agregarEspiasCeranos(espias.get(0), espias.get(6), espias.get(20));
-        espias.get(8).agregarEspiasCeranos(espias.get(3), espias.get(16));
-        espias.get(9).agregarEspiasCeranos(espias.get(16));
-        espias.get(10).agregarEspiasCeranos(espias.get(2), espias.get(5), espias.get(17), espias.get(18));
-        espias.get(11).agregarEspiasCeranos(espias.get(0), espias.get(5), espias.get(12), espias.get(15), espias.get(18));
-        espias.get(12).agregarEspiasCeranos(espias.get(11), espias.get(14), espias.get(17), espias.get(18));
-        espias.get(13).agregarEspiasCeranos(espias.get(6));
-        espias.get(14).agregarEspiasCeranos(espias.get(12), espias.get(15));
-        espias.get(15).agregarEspiasCeranos(espias.get(0), espias.get(4), espias.get(11), espias.get(14));
-        espias.get(16).agregarEspiasCeranos(espias.get(2), espias.get(3), espias.get(8), espias.get(9), espias.get(21), espias.get(23));
-        espias.get(17).agregarEspiasCeranos(espias.get(10), espias.get(12), espias.get(18));
-        espias.get(18).agregarEspiasCeranos(espias.get(5), espias.get(11), espias.get(12), espias.get(13), espias.get(17));
-        espias.get(19).agregarEspiasCeranos(espias.get(4), espias.get(22));
-        espias.get(20).agregarEspiasCeranos(espias.get(0), espias.get(3), espias.get(5), espias.get(6), espias.get(7), espias.get(21));
-        espias.get(21).agregarEspiasCeranos(espias.get(2), espias.get(3), espias.get(5), espias.get(17), espias.get(20), espias.get(23));
-        espias.get(22).agregarEspiasCeranos(espias.get(19));
-        espias.get(23).agregarEspiasCeranos(espias.get(2), espias.get(16), espias.get(21));
+        espias.get(0).agregarEspiasCercanos(espias.get(1), espias.get(5), espias.get(7), espias.get(11), espias.get(15), espias.get(20));
+        espias.get(1).agregarEspiasCercanos(espias.get(0));
+        espias.get(2).agregarEspiasCercanos(espias.get(5), espias.get(10), espias.get(16), espias.get(21), espias.get(23));
+        espias.get(3).agregarEspiasCercanos(espias.get(6), espias.get(8), espias.get(16), espias.get(20), espias.get(21));
+        espias.get(4).agregarEspiasCercanos(espias.get(15), espias.get(19));
+        espias.get(5).agregarEspiasCercanos(espias.get(0), espias.get(2), espias.get(11), espias.get(10), espias.get(18), espias.get(20), espias.get(21));
+        espias.get(6).agregarEspiasCercanos(espias.get(3), espias.get(7), espias.get(13), espias.get(20));
+        espias.get(7).agregarEspiasCercanos(espias.get(0), espias.get(6), espias.get(20));
+        espias.get(8).agregarEspiasCercanos(espias.get(3), espias.get(16));
+        espias.get(9).agregarEspiasCercanos(espias.get(16));
+        espias.get(10).agregarEspiasCercanos(espias.get(2), espias.get(5), espias.get(17), espias.get(18));
+        espias.get(11).agregarEspiasCercanos(espias.get(0), espias.get(5), espias.get(12), espias.get(15), espias.get(18));
+        espias.get(12).agregarEspiasCercanos(espias.get(11), espias.get(14), espias.get(17), espias.get(18));
+        espias.get(13).agregarEspiasCercanos(espias.get(6));
+        espias.get(14).agregarEspiasCercanos(espias.get(12), espias.get(15));
+        espias.get(15).agregarEspiasCercanos(espias.get(0), espias.get(4), espias.get(11), espias.get(14));
+        espias.get(16).agregarEspiasCercanos(espias.get(2), espias.get(3), espias.get(8), espias.get(9), espias.get(21), espias.get(23));
+        espias.get(17).agregarEspiasCercanos(espias.get(10), espias.get(12), espias.get(18));
+        espias.get(18).agregarEspiasCercanos(espias.get(5), espias.get(11), espias.get(12), espias.get(13), espias.get(17));
+        espias.get(19).agregarEspiasCercanos(espias.get(4), espias.get(22));
+        espias.get(20).agregarEspiasCercanos(espias.get(0), espias.get(3), espias.get(5), espias.get(6), espias.get(7), espias.get(21));
+        espias.get(21).agregarEspiasCercanos(espias.get(2), espias.get(3), espias.get(5), espias.get(17), espias.get(20), espias.get(23));
+        espias.get(22).agregarEspiasCercanos(espias.get(19));
+        espias.get(23).agregarEspiasCercanos(espias.get(2), espias.get(16), espias.get(21));
 
         seAgregaronEspiasCercanos = true;
     }
