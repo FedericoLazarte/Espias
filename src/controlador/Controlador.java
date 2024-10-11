@@ -118,7 +118,7 @@ public class Controlador {
 		mostrarPunto(map, coordPeso, String.valueOf(peso), Color.RED);
 	}
 
-	public void agrgarNuevoEspia(Espia espia) {
+	public void agregarNuevoEspia(Espia espia) {
 		this.grafo.agregarVertice(espia);
 		this.espias.add(espia);
 		mostrarPunto(vista.getMapViewer(), espia.obtenerCoordenadaEspia(), espia.toString(), Color.YELLOW);
