@@ -8,14 +8,12 @@ public class Arista<T extends Comparable<T>> implements Comparable<Arista<T>> {
 	private T verticeDestino;
 	private double peso;
 
-	// Constructor
 	public Arista(T verticeInicio, T verticeDestino, double peso) {
 		this.verticeInicio = verticeInicio;
 		this.verticeDestino = verticeDestino;
 		this.peso = peso;
 	}
 
-	// Métodos públicos
 	public T obtenerVerticeInicio() {
 		return this.verticeInicio;
 	}
@@ -74,7 +72,6 @@ public class Arista<T extends Comparable<T>> implements Comparable<Arista<T>> {
 		};
 	}
 
-	// Métodos privados
 	private boolean sonSimilares(Arista<?> otraArista) {
 		return sonIguales(otraArista) ||
 				(this.verticeInicio.equals(otraArista.verticeDestino)
@@ -93,4 +90,3 @@ public class Arista<T extends Comparable<T>> implements Comparable<Arista<T>> {
 		return true;
 	}
 }
-

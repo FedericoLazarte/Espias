@@ -27,13 +27,11 @@ public class Controlador {
 	private Set<Arista<Espia>> aristasG;
 	private TreeSet<Arista<Espia>> aristasAGM;
 
-	// Constructor
 	public Controlador(Main vista) {
 		this.vista = vista;
 		inicializarObjetos();
 	}
 
-	// Métodos públicos
 	public void mostrarMapaConGrafo() {
 		mostrarMapaConGrafo(this.aristasG);
 	}
@@ -130,7 +128,6 @@ public class Controlador {
 		return resultados;
 	}
 	
-	// Métodos privados
 	private void mostrarMapaConGrafo(Set<Arista<Espia>> aristas) {
 		limpiarMapa();
 		for (Espia e : this.espias) {
@@ -201,7 +198,6 @@ public class Controlador {
 		aristasAGM = new TreeSet<>();
 	}
 
-	// Enum
 	public static enum Algoritmo_AGM {
 		PRIM,
 		KRUSKAL

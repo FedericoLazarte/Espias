@@ -18,14 +18,13 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-import javax.swing.JOptionPane;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
 import controlador.Controlador;
 import controlador.Controlador.Algoritmo_AGM;
 import logica.Espia;
-import logica.EspiasHarcodeado;
+import logica.EspiasArgentinos;
 
 @SuppressWarnings("serial")
 public class Main extends JFrame{
@@ -69,9 +68,6 @@ public class Main extends JFrame{
 		});
 	}
 
-	/**
-	 * Create the application.
-	 */
 	public Main() {
 		agmEnPantalla = false;
 		controlador = new Controlador(this);
@@ -131,18 +127,13 @@ public class Main extends JFrame{
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 2) {
-					//Nombre del espia
 					String nombreEspia;
 					nombreEspia = JOptionPane.showInputDialog("Ingrese nombre de espía:");
 					if (nombreEspia == null) {
 						return;
 					}
-					
-					//Coordenada del espia
 					Point punto = e.getPoint();
 					Coordinate c = (Coordinate) mapa.getPosition(punto);
-					
-					//Se crea el espia
 					Espia espia = new Espia(nombreEspia, c);
 					nuevoEspia(espia);
 				}
@@ -164,27 +155,14 @@ public class Main extends JFrame{
 	}
 	
 	private void crearBotones() {
-		//Label Ayuda
 		JLabel labelAyuda = new JLabel("Doble clic derecho para una nueva locación");
 		panelDeBotones.add(labelAyuda);
 		labelAyuda.setHorizontalAlignment(SwingConstants.LEFT);
-		
-		//Boton para agregar relacion
 		crearBtnAgregarRelacion();
-		
-		//Combobox para elegir algoritmo
 		crearComboBoxAlgoritmo();
-		
-		//Boton de AGM
 		crearBotonAGM();
-		
-		//Boton para comparar algoritmos
 		crearBotonCompararAlgm();
-		
-		//Boton para espias argentinos
 		crearBotonesEspiasArgentinos();
-		
-		//Boton para borrar los espias
 		crearBotonBorrarEspias();
 	}
 
@@ -362,7 +340,7 @@ public class Main extends JFrame{
 	}
 	
 	private void agregarEspiasArgentinos() {
-		for(Espia e : EspiasHarcodeado.EspiasDeArgentina(direccionArchivo)) {
+		for(Espia e : EspiasArgentinos.EspiasDeArgentina(direccionArchivo)) {
 			nuevoEspia(e);
 		}
 	}

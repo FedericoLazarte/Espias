@@ -7,14 +7,10 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import logica.AbstractAGM;
-
 @SuppressWarnings("unchecked")
 public class Grafo<T extends Comparable<T>> {
-
     private TreeMap<T, TreeSet<Arista<T>>> listaDeVecinos;
 
-    // Constructores
     public Grafo() {
     	listaDeVecinos = new TreeMap<>();
     }
@@ -62,7 +58,6 @@ public class Grafo<T extends Comparable<T>> {
         }
     }
 
-    // Métodos para modificar el grafo
     public void agregarVertices(T... vertices) {
         agregarVertices(Arrays.asList(vertices));
     }
@@ -99,7 +94,6 @@ public class Grafo<T extends Comparable<T>> {
         }
     }
 
-    // Métodos de consulta del grafo
     public TreeMap<T, TreeSet<Arista<T>>> listaDeVecinos() {
         return listaDeVecinos;
     }
@@ -191,4 +185,3 @@ public class Grafo<T extends Comparable<T>> {
         }
     }
 }
-

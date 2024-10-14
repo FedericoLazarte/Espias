@@ -1,14 +1,10 @@
 package logica;
 
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
-import logica.Arista;
-import logica.Grafo;
 
 public abstract class AbstractAGM <T extends Comparable<T>>
 {

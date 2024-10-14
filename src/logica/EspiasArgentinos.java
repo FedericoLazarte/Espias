@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 
-public class EspiasHarcodeado {
+public class EspiasArgentinos {
 	
 	private static boolean seAgregaronEspiasCercanos = false;
     private static List<Espia> espias = new ArrayList<>();
