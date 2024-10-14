@@ -41,13 +41,9 @@ public class EspiasHarcodeado {
                         }
                         String nombre = nombreBuilder.toString().trim();  // Eliminar el último espacio extra
 
-                        // Crear el objeto Coordinate
+                        // Crear el espia y agregarlo a la lista
                         Coordinate coordenada = new Coordinate(latitud, longitud);
-
-                        // Crear el objeto Espia
                         Espia espia = new Espia(nombre, coordenada);
-
-                        // Agregar el espía a la lista
                         espias.add(espia);
 
                     } catch (NumberFormatException e) {
@@ -61,7 +57,6 @@ public class EspiasHarcodeado {
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            //este segundo "catch" es para solucionar un problema (no importante pero molesto de pedida de excepción)
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -70,14 +65,14 @@ public class EspiasHarcodeado {
     public static Espia [] EspiasDeArgentina(String archivo) {
     	if(!seAgregaronEspiasCercanos) {
     		cargarEspiasDesdeArchivo(archivo);
-    		agregarEspiasCeranos();
+    		agregarEspiasCercanos();
     		
     	}
     	return espias.toArray(new Espia[0]);
     }
     
     
-    private static void agregarEspiasCeranos() {
+    private static void agregarEspiasCercanos() {
         // Suponiendo que 'espias' tiene al menos 24 elementos
         espias.get(0).agregarEspiasCercanos(espias.get(1), espias.get(5), espias.get(7), espias.get(11), espias.get(15), espias.get(20));
         espias.get(1).agregarEspiasCercanos(espias.get(0));

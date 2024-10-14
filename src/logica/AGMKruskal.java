@@ -9,16 +9,20 @@ import logica.Grafo;
 
 public class AGMKruskal<T extends Comparable<T>> extends AbstractAGM<T> {
 
+	// Constructor 
 	public AGMKruskal(Grafo<T> g) {
 		super(g);
 	}
 
+	// Métodos públicos
 	@Override
 	public TreeSet<Arista<T>> aristasDelAGM() {
 		algoritmoAGM(); // Ejecuta el algoritmo para generar el AGM
 		return aristasDelAGM;
 	}
 
+	// Métodos privados
+	
 	// Algoritmo de Kruskal
 	private void algoritmoAGM() {
 		// Primero verificamos que el grafo sea conexo
@@ -39,21 +43,19 @@ public class AGMKruskal<T extends Comparable<T>> extends AbstractAGM<T> {
 		}
 	}
 	
+	// Inicializa los objetos necesarios para ejecutar el algoritmo
 	private void inicializarObjetosUtiles() {
-		listaDeAdj = grafo.listaDeAdyacencias();
+		listaDeVecinos = grafo.listaDeVecinos();
 		aristasConExtremoFuera = new TreeSet<>(Arista.aristaComparator());
 		aristasDelAGM = new TreeSet<>();
 		verticesConAristasPotenciales = new ArrayList<>();
-		verticesConAristasPotenciales.add(grafo.primerVertice());
+		verticesConAristasPotenciales.add(grafo.primerVertice()); // Comenzamos con el primer vértice
 	}
 
-	private Arista<T> obtenerAristaDeMenorPesoEntreLasPosibles() {
-		return aristasConExtremoFuera.pollFirst();
-	}
-
+	// Agrega las aristas cuyo extremo está fuera del conjunto de vértices visitados
 	private void agregarAristasConExtremos() {
 		for (T vertice: verticesConAristasPotenciales) {
-			for (Arista<T> arista: listaDeAdj.get(vertice)) {
+			for (Arista<T> arista: listaDeVecinos.get(vertice)) {
 				if (!aristasDelAGM.contains(arista) &&
 				!verticesConAristasPotenciales.contains(arista.obtenerVerticeDestino()))
 				{
@@ -61,5 +63,10 @@ public class AGMKruskal<T extends Comparable<T>> extends AbstractAGM<T> {
 				}
 			}
 		}
+	}
+	
+	// Obtiene la arista con el menor peso entre las posibles
+	private Arista<T> obtenerAristaDeMenorPesoEntreLasPosibles() {
+		return aristasConExtremoFuera.pollFirst(); // Extrae la arista de menor peso
 	}
 }

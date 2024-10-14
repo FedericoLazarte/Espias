@@ -9,16 +9,20 @@ import logica.Grafo;
 
 public class AGMPrim<T extends Comparable<T>> extends AbstractAGM<T> {
 
+	// Constructor 
     public AGMPrim(Grafo<T> g) {
         super(g);
     }
 
+    // Métodos públicos
     @Override
     public TreeSet<Arista<T>> aristasDelAGM() {
         algoritmoAGM(); // Ejecuta el algoritmo para generar el AGM
         return aristasDelAGM;
     }
 
+    // Métodos privados
+    
     // Algoritmo de Prim
     private void algoritmoAGM() {
     	// Primero verificamos que el grafo sea conexo
@@ -47,7 +51,7 @@ public class AGMPrim<T extends Comparable<T>> extends AbstractAGM<T> {
 
     // Inicializa los objetos necesarios para ejecutar el algoritmo
     private void inicializarObjetosUtiles() {
-        listaDeAdj = grafo.listaDeAdyacencias();
+        listaDeVecinos = grafo.listaDeVecinos();
         aristasConExtremoFuera = new TreeSet<>(Arista.aristaComparator());
         aristasDelAGM = new TreeSet<>();
         verticesConAristasPotenciales = new ArrayList<>();
@@ -57,7 +61,7 @@ public class AGMPrim<T extends Comparable<T>> extends AbstractAGM<T> {
     // Agrega las aristas cuyo extremo está fuera del conjunto de vértices visitados
     private void agregarAristasConExtremos() {
         for (T vertice : verticesConAristasPotenciales) {
-            for (Arista<T> arista : listaDeAdj.get(vertice)) {
+            for (Arista<T> arista : listaDeVecinos.get(vertice)) {
                 if (!aristasDelAGM.contains(arista) &&
                     !verticesConAristasPotenciales.contains(arista.obtenerVerticeDestino())) {
                     aristasConExtremoFuera.add(arista); // Agregamos aristas con un vértice no visitado

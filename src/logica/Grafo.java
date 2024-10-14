@@ -12,11 +12,11 @@ import logica.AbstractAGM;
 @SuppressWarnings("unchecked")
 public class Grafo<T extends Comparable<T>> {
 
-    private TreeMap<T, TreeSet<Arista<T>>> listaDeAdj;
+    private TreeMap<T, TreeSet<Arista<T>>> listaDeVecinos;
 
-    //Constructores
+    // Constructores
     public Grafo() {
-    	listaDeAdj = new TreeMap<>();
+    	listaDeVecinos = new TreeMap<>();
     }
 
     public Grafo(T... vertices) {
@@ -48,7 +48,7 @@ public class Grafo<T extends Comparable<T>> {
             T vertDestino = arista.obtenerVerticeDestino();
             chequearQueSeanDistintosVertices(vertInicio, vertDestino);
 
-            TreeSet<Arista<T>> aristasDelVertice = listaDeAdj.get(vertInicio);
+            TreeSet<Arista<T>> aristasDelVertice = listaDeVecinos.get(vertInicio);
             for (Arista<T> a : aristasDelVertice) {
                 if (a.equals(arista)) {
                     continue loop;
@@ -57,12 +57,12 @@ public class Grafo<T extends Comparable<T>> {
 
             aristasDelVertice.add(arista);
             Arista<T> aristaAux = new Arista<>(vertDestino, vertInicio, arista.obtenerPeso());
-            aristasDelVertice = listaDeAdj.get(vertDestino);
+            aristasDelVertice = listaDeVecinos.get(vertDestino);
             aristasDelVertice.add(aristaAux);
         }
     }
 
-    //Métodos para modificar el grafo
+    // Métodos para modificar el grafo
     public void agregarVertices(T... vertices) {
         agregarVertices(Arrays.asList(vertices));
     }
@@ -75,41 +75,41 @@ public class Grafo<T extends Comparable<T>> {
 
     public void agregarVertice(T vertice) {
         chequearVerticeSiNoExiste(vertice);
-        listaDeAdj.put(vertice, new TreeSet<>(Arista.aristaComparator()));
+        listaDeVecinos.put(vertice, new TreeSet<>(Arista.aristaComparator()));
     }
 
     public void agregarAristaEntreVertices(T v1, T v2, double p) {
         chequearValidezPosibleArista(v1, v2, p);
-        listaDeAdj.get(v1).add(new Arista<>(v1, v2, p));
-        listaDeAdj.get(v2).add(new Arista<>(v2, v1, p));
+        listaDeVecinos.get(v1).add(new Arista<>(v1, v2, p));
+        listaDeVecinos.get(v2).add(new Arista<>(v2, v1, p));
     }
 
     public void cambiarPesoDeArista(T v1, T v2, double nuevoPeso) {
         chequearVerticeSiExiste(v1);
         chequearVerticeSiExiste(v2);
-        for (Arista<T> ar : listaDeAdj.get(v1)) {
+        for (Arista<T> ar : listaDeVecinos.get(v1)) {
             if (ar.obtenerVerticeDestino().equals(v2)) {
                 ar.cambiarPeso(nuevoPeso);
             }
         }
-        for (Arista<T> ar : listaDeAdj.get(v2)) {
+        for (Arista<T> ar : listaDeVecinos.get(v2)) {
             if (ar.obtenerVerticeDestino().equals(v1)) {
                 ar.cambiarPeso(nuevoPeso);
             }
         }
     }
 
-    //Métodos de consulta del grafo
-    public TreeMap<T, TreeSet<Arista<T>>> listaDeAdyacencias() {
-        return listaDeAdj;
+    // Métodos de consulta del grafo
+    public TreeMap<T, TreeSet<Arista<T>>> listaDeVecinos() {
+        return listaDeVecinos;
     }
 
     public int tamanio() {
-        return listaDeAdj.size();
+        return listaDeVecinos.size();
     }
 
     public boolean existeAristaEntreVertices(T v1, T v2) {
-        for (Arista<T> arista : listaDeAdj.get(v1)) {
+        for (Arista<T> arista : listaDeVecinos.get(v1)) {
             if (arista.obtenerVerticeDestino().equals(v2)) {
                 return true;
             }
@@ -118,7 +118,7 @@ public class Grafo<T extends Comparable<T>> {
     }
 
     public double pesoDeLaAristaEntreVertices(T v1, T v2) {
-        for (Arista<T> arista : listaDeAdj.get(v1)) {
+        for (Arista<T> arista : listaDeVecinos.get(v1)) {
             if (arista.obtenerVerticeDestino().equals(v2)) {
                 return arista.obtenerPeso();
             }
@@ -128,14 +128,14 @@ public class Grafo<T extends Comparable<T>> {
 
     public Set<T> vecinosDeVertice(T v) {
         Set<T> vecinos = new HashSet<>();
-        for (Arista<T> arista : listaDeAdj.get(v)) {
+        for (Arista<T> arista : listaDeVecinos.get(v)) {
             vecinos.add(arista.obtenerVerticeDestino());
         }
         return vecinos;
     }
 
     public T primerVertice() {
-        return listaDeAdj.firstKey();
+        return listaDeVecinos.firstKey();
     }
 
     public boolean esConexo() {
@@ -147,9 +147,9 @@ public class Grafo<T extends Comparable<T>> {
     }
 
     public void printData() {
-        for (T vertice : listaDeAdj.keySet()) {
+        for (T vertice : listaDeVecinos.keySet()) {
             System.out.print(vertice + " es vecino de: ");
-            TreeSet<Arista<T>> aristas = listaDeAdj.get(vertice);
+            TreeSet<Arista<T>> aristas = listaDeVecinos.get(vertice);
             for (Arista<T> a : aristas) {
                 System.out.print(a.obtenerVerticeDestino() + ", ");
             }
@@ -157,12 +157,12 @@ public class Grafo<T extends Comparable<T>> {
         }
     }
 
-    //Métodos para verificar vertices
+    // Métodos para verificar vertices
     private void chequearVerticeSiExiste(T vertice) {
         if (vertice == null) {
             throw new NullPointerException("el vertice es null");
         }
-        if (!listaDeAdj.containsKey(vertice)) {
+        if (!listaDeVecinos.containsKey(vertice)) {
             throw new IllegalArgumentException("Vértice no existe");
         }
     }
@@ -171,7 +171,7 @@ public class Grafo<T extends Comparable<T>> {
         if (vertice == null) {
             throw new NullPointerException("el vertice es null");
         }
-        if (listaDeAdj.containsKey(vertice)) {
+        if (listaDeVecinos.containsKey(vertice)) {
             throw new IllegalArgumentException("Vértice existente");
         }
     }

@@ -12,7 +12,7 @@ import logica.Grafo;
 
 public abstract class AbstractAGM <T extends Comparable<T>>
 {
-	protected TreeMap<T, TreeSet<Arista<T>>> listaDeAdj;
+	protected TreeMap<T, TreeSet<Arista<T>>> listaDeVecinos;
 	protected TreeSet<Arista<T>> aristasConExtremoFuera;
 	protected TreeSet<Arista<T>> aristasDelAGM;
 	protected List<T> verticesConAristasPotenciales;
@@ -27,7 +27,14 @@ public abstract class AbstractAGM <T extends Comparable<T>>
 	public Grafo<T> AGMdelGrafo() {
 		return new Grafo<>(verticesConAristasPotenciales,aristasDelAGM);
 	}
-
+	
+	public long tiempoEjecucionEnNanoSegundos() {
+		long tiempoInicial = System.nanoTime();// devuelve el tiempo en milisegundos
+		this.aristasDelAGM();
+		long tiempoFinal = System.nanoTime();
+		return tiempoFinal - tiempoInicial;
+	}
+	
 	protected void descartarAristasQueGenerarianCiclos() {
 		Set<Arista<T>> aristasParaDescartar = new HashSet<>();
 		for (Arista<T> arista: aristasConExtremoFuera) {
@@ -37,12 +44,5 @@ public abstract class AbstractAGM <T extends Comparable<T>>
 			}
 		}
 		aristasConExtremoFuera.removeAll(aristasParaDescartar);
-	}
-	
-	public long tiempoEjecucionEnNanoSegundos() {
-		long tiempoInicial = System.nanoTime();// devuelve el tiempo en milisegundos
-		this.aristasDelAGM();
-		long tiempoFinal = System.nanoTime();
-		return tiempoFinal - tiempoInicial;
 	}
 }
