@@ -11,14 +11,14 @@ public class BFS <T extends Comparable<T>>{
 	private Set<T> visitados;
 	private Grafo<T> grafo;
 
-	public static <T extends Comparable<T>> boolean esConexo(Grafo<T> g) {
-		return new BFS<>(g).esConexo();
-	}
-
 	private BFS(Grafo<T> grafo) {
 		this.grafo = grafo;
 	}
-
+	
+	public static <T extends Comparable<T>> boolean esConexo(Grafo<T> g) {
+		return new BFS<>(g).esConexo();
+	}
+	
 	private boolean esConexo() {
 		return grafo.tamanio() == 0 ||
 		alcanzablesDesdeVertice(grafo.primerVertice()).size() == grafo.tamanio();

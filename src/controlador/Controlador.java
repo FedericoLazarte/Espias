@@ -16,7 +16,7 @@ import interfaz.Main;
 import logica.Arista;
 import logica.Espia;
 import logica.Grafo;
-import logica.AGMKruscal;
+import logica.AGMKruskal;
 import logica.AGMPrim;
 import logica.AbstractAGM;
 
@@ -36,43 +36,22 @@ public class Controlador {
 		mostrarMapaConGrafo(this.aristasG);
 	}
 
-	private void mostrarMapaConGrafo(Set<Arista<Espia>> aristas) {
-		limpiarMapa();
-		for (Espia e : this.espias) {
-			mostrarPunto(vista.getMapViewer(), e.obtenerCoordenadaEspia(), e.toString(), Color.YELLOW);
-		}
-		for (Arista<Espia> ar : aristas) {
-			graficarArista(vista.getMapViewer(), ar);
-		}
-	}
-	
-	public long[] compararAlgoritmos() {
-		AbstractAGM<Espia> algoritmoKruskal = new AGMKruscal<Espia>(grafo);
-		AbstractAGM<Espia> algoritmoPrim = new AGMPrim<Espia>(grafo);
-		
-		long resultados[] = new long[2];
-		resultados[0] = algoritmoKruskal.tiempoEjecucionEnNanoSegundos();
-		resultados[1] = algoritmoPrim.tiempoEjecucionEnNanoSegundos();
-		
-		return resultados;
-	}
-
 	public boolean dibujarAGM(Algoritmo_AGM algoritmoAGM) {
 		try {
-			AbstractAGM<Espia> agmGenerator;
+			AbstractAGM<Espia> algoritmoSeleccionado;
 
 			switch(algoritmoAGM) {
 			case PRIM:
-				agmGenerator = new AGMPrim<>(grafo); break;
+				algoritmoSeleccionado = new AGMPrim<>(grafo); break;
 			case KRUSKAL:
-				agmGenerator = new AGMKruscal<>(grafo); break;
+				algoritmoSeleccionado = new AGMKruskal<>(grafo); break;
 			default:
 				throw new IllegalArgumentException("Algoritmo no cargado");
 			}
-			this.aristasAGM = grafo.aristasDelAGM(agmGenerator);
+			this.aristasAGM = grafo.aristasDelAGM(algoritmoSeleccionado);
 			limpiarMapa();
 			mostrarMapaConGrafo(this.aristasAGM);
-			System.out.println("tiempo de ejecucion = " + agmGenerator.tiempoEjecucionEnNanoSegundos());
+			System.out.println("tiempo de ejecucion = " + algoritmoSeleccionado.tiempoEjecucionEnNanoSegundos());
 			return true;
 		} catch (GrafoNoConexoException e) {
 			vista.mostrarAlerta("El grafo aún no es conexo, añada más aristas");
@@ -82,7 +61,84 @@ public class Controlador {
 		return false;
 	}
 
-	public void limpiarMapa() {
+	public void agregarNuevoEspia(Espia espia) {
+		this.grafo.agregarVertice(espia);
+		this.espias.add(espia);
+		mostrarPunto(vista.getMapViewer(), espia.obtenerCoordenadaEspia(), espia.toString(), Color.YELLOW);
+	}
+
+	public void nuevaArista(Espia e1, Espia e2, double peso) {
+		try {
+			this.grafo.agregarAristaEntreVertices(e1, e2, peso);
+			Arista<Espia> ar = new Arista<>(e1, e2, peso);
+			if (agregarArista(ar)) {
+				graficarArista(vista.getMapViewer(), ar);
+			} else {
+				vista.mostrarAlerta("¡No puede cambiar el peso de la arista!");
+			}
+		} catch (IllegalArgumentException e) {
+			vista.mostrarAlerta("¡No puede añadir una relación entre un mismo vértice!");
+		}
+	}
+
+	public void quitarTodosLosPuntos() {
+		inicializarObjetos();
+	}
+
+	public void grafoCompletoAristasAleatorias() {
+		inicializarAristas();
+		for (Espia e : this.espias) {
+			for (Espia e2 : this.espias) {
+				if (e.equals(e2)) {
+					continue;
+				}
+				double peso = Math.random();
+				Arista<Espia> ar = new Arista<>(e, e2, peso);
+				if (agregarArista(ar)) {
+					this.grafo.agregarAristaEntreVertices(e2, e, peso);
+				}
+			}
+		}
+		grafo = new Grafo<>(this.espias, this.aristasG);
+		mostrarMapaConGrafo();
+	}
+
+	public void espiasConPesosAleatorios() {
+		for (Espia e : this.espias) {
+			for (Espia e2 : e.obtenerEspiasCercanos()) {
+				double peso = Math.random();
+				Arista<Espia> ar = new Arista<>(e, e2, peso);
+				if (agregarArista(ar)) {
+					grafo.agregarAristaEntreVertices(e, e2, peso);
+				}
+			}
+		}
+		mostrarMapaConGrafo();
+	}
+
+
+	public long[] compararAlgoritmos() {
+		AbstractAGM<Espia> algoritmoKruskal = new AGMKruskal<Espia>(grafo);
+		AbstractAGM<Espia> algoritmoPrim = new AGMPrim<Espia>(grafo);
+		
+		long resultados[] = new long[2];
+		resultados[0] = algoritmoKruskal.tiempoEjecucionEnNanoSegundos();
+		resultados[1] = algoritmoPrim.tiempoEjecucionEnNanoSegundos();
+		
+		return resultados;
+	}
+	
+	private void mostrarMapaConGrafo(Set<Arista<Espia>> aristas) {
+		limpiarMapa();
+		for (Espia e : this.espias) {
+			mostrarPunto(vista.getMapViewer(), e.obtenerCoordenadaEspia(), e.toString(), Color.YELLOW);
+		}
+		for (Arista<Espia> ar : aristas) {
+			graficarArista(vista.getMapViewer(), ar);
+		}
+	}
+
+	private void limpiarMapa() {
 		limpiarPuntos();
 		limpiarAristas();
 	}
@@ -118,12 +174,6 @@ public class Controlador {
 		mostrarPunto(map, coordPeso, String.valueOf(peso), Color.RED);
 	}
 
-	public void agrgarNuevoEspia(Espia espia) {
-		this.grafo.agregarVertice(espia);
-		this.espias.add(espia);
-		mostrarPunto(vista.getMapViewer(), espia.obtenerCoordenadaEspia(), espia.toString(), Color.YELLOW);
-	}
-
 	private void mostrarPunto(JMapViewer map, Coordinate c, String texto, Color color) {
 		MapMarkerDot punto = new MapMarkerDot(c);
 		if (texto != null) {
@@ -133,22 +183,7 @@ public class Controlador {
 		map.addMapMarker(punto);
 	}
 
-	public void nuevaArista(Espia e1, Espia e2, double peso) {
-		try {
-			this.grafo.agregarAristaEntreVertices(e1, e2, peso);
-			Arista<Espia> ar = new Arista<>(e1, e2, peso);
-			if (agregarArista(ar)) {
-				graficarArista(vista.getMapViewer(), ar);
-			} else {
-				// No enconté forma de poder hacerlo
-				vista.mostrarAlerta("¡No puede cambiar el peso de la arista!");
-			}
-		} catch (IllegalArgumentException e) {
-			vista.mostrarAlerta("¡No puede añadir una relación entre un mismo vértice!");
-		}
-	}
-
-	public boolean agregarArista(Arista<Espia> ar) {
+	private boolean agregarArista(Arista<Espia> ar) {
 		return aristasG.add(ar);
 	}
 
@@ -161,43 +196,6 @@ public class Controlador {
 	private void inicializarAristas() {
 		aristasG = new HashSet<>();
 		aristasAGM = new TreeSet<>();
-	}
-
-	public void quitarTodosLosPuntos() {
-		inicializarObjetos();
-	}
-
-	public void grafoCompletoAristasAleatorias() {
-		inicializarAristas();
-		for (Espia e : this.espias) {
-			for (Espia e2 : this.espias) {
-				if (e.equals(e2)) {
-					continue;
-				}
-				//double peso = (double) new java.util.Random().nextInt(1, 100);
-				double peso = Math.random();
-				Arista<Espia> ar = new Arista<>(e, e2, peso);
-				if (agregarArista(ar)) {
-					this.grafo.agregarAristaEntreVertices(e2, e, peso);
-				}
-			}
-		}
-		grafo = new Grafo<>(this.espias, this.aristasG);
-		mostrarMapaConGrafo();
-	}
-
-	public void espiasConPesosAleatorios() {
-		for (Espia e : this.espias) {
-			for (Espia e2 : e.obtenerEspiasCercanos()) {
-//				double peso = (double) new java.util.Random().nextDouble(0, 1);
-				double peso = Math.random();
-				Arista<Espia> ar = new Arista<>(e, e2, peso);
-				if (agregarArista(ar)) {
-					grafo.agregarAristaEntreVertices(e, e2, peso);
-				}
-			}
-		}
-		mostrarMapaConGrafo();
 	}
 
 	public static enum Algoritmo_AGM {

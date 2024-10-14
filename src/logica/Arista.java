@@ -3,17 +3,15 @@ package logica;
 import java.util.Comparator;
 import java.util.Objects;
 
-public class Arista <T extends Comparable<T>> implements Comparable<Arista<T>>{
+public class Arista<T extends Comparable<T>> implements Comparable<Arista<T>> {
 	private T verticeInicio;
 	private T verticeDestino;
 	private double peso;
 
-	public Arista(T verticeInicio, T VerticeDestino, double peso) {
+	public Arista(T verticeInicio, T verticeDestino, double peso) {
 		this.verticeInicio = verticeInicio;
-		this.verticeDestino = VerticeDestino;
-	//	pesoValido(peso);
+		this.verticeDestino = verticeDestino;
 		this.peso = peso;
-
 	}
 
 	public T obtenerVerticeInicio() {
@@ -28,14 +26,17 @@ public class Arista <T extends Comparable<T>> implements Comparable<Arista<T>>{
 		return this.peso;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		if (o instanceof Arista) {
-			Arista<?> a = (Arista<?>) o;
-			return sonSimilares(a);
-//			return sonIguales(a);
-		}
+	public void cambiarPeso(double nuevoPeso) {
+		pesoValido(nuevoPeso);
+		this.peso = nuevoPeso;
+	}
 
+	@Override
+	public boolean equals(Object objeto) {
+		if (objeto instanceof Arista) {
+			Arista<?> arista = (Arista<?>) objeto;
+			return sonSimilares(arista);
+		}
 		return false;
 	}
 
@@ -44,15 +45,17 @@ public class Arista <T extends Comparable<T>> implements Comparable<Arista<T>>{
 		return Objects.hash(verticeInicio) + Objects.hash(verticeDestino);
 	}
 
-	private boolean sonIguales(Arista<?> a) {
-		return this.verticeInicio.equals(a.verticeInicio)
-				&& this.verticeDestino.equals(a.verticeDestino);
-	}
-
-	private boolean sonSimilares(Arista<?> a) {
-		return sonIguales(a) ||
-				(this.verticeInicio.equals(a.verticeDestino)
-						&& this.verticeDestino.equals(a.verticeInicio));
+	@Override
+	public int compareTo(Arista<T> otraArista) {
+		int comparacion;
+		if (this.peso != otraArista.peso) {
+			comparacion = Double.compare(this.peso, otraArista.peso);
+		} else if (!this.verticeInicio.equals(otraArista.verticeInicio)) {
+			comparacion = this.verticeInicio.compareTo(otraArista.verticeInicio);
+		} else {
+			comparacion = this.verticeDestino.compareTo(otraArista.verticeDestino);
+		}
+		return comparacion;
 	}
 
 	@Override
@@ -69,30 +72,21 @@ public class Arista <T extends Comparable<T>> implements Comparable<Arista<T>>{
 		};
 	}
 
-	@Override
-	public int compareTo(Arista<T> ar) {
-		int a;
-		if (this.peso != ar.peso) {
-			a = Double.compare(this.peso, ar.peso);
-		}
-		else if (!this.verticeInicio.equals(ar.verticeInicio)) {
-			a = this.verticeInicio.compareTo(ar.verticeInicio);
-		} else {
-			a = this.verticeDestino.compareTo(ar.verticeDestino);
-		}
-		return a;
+	private boolean sonSimilares(Arista<?> otraArista) {
+		return sonIguales(otraArista) ||
+				(this.verticeInicio.equals(otraArista.verticeDestino)
+						&& this.verticeDestino.equals(otraArista.verticeInicio));
 	}
 
-	public void cambiarPeso(double nuevoPeso) {
-		pesoValido(nuevoPeso);
-		this.peso = nuevoPeso;
+	private boolean sonIguales(Arista<?> a) {
+		return this.verticeInicio.equals(a.verticeInicio)
+				&& this.verticeDestino.equals(a.verticeDestino);
 	}
 
 	private boolean pesoValido(double peso) {
-		if(peso < 0 || peso > 1) {
-			throw new IllegalArgumentException("El peso debe nayor o igual que 0 y menor igual que 1");
+		if (peso < 0 || peso > 1) {
+			throw new IllegalArgumentException("El peso debe ser mayor o igual que 0 y menor o igual que 1");
 		}
 		return true;
 	}
-
 }

@@ -15,7 +15,8 @@ public class Espia implements Comparable<Espia>{
 		this.coordenada = coordenada;
 		this.espiasCercanos = new ArrayList<>();
 	}
-	public void agregarEspiasCeranos(Espia...espias) {
+	
+	public void agregarEspiasCercanos(Espia...espias) {
 		this.espiasCercanos.addAll(Arrays.asList(espias));
 	}
 
@@ -27,6 +28,10 @@ public class Espia implements Comparable<Espia>{
 		return this.coordenada;
 	}
 
+	public ArrayList<Espia> obtenerEspiasCercanos() {
+		return this.espiasCercanos;
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder infoEspia = new StringBuilder();
@@ -38,21 +43,16 @@ public class Espia implements Comparable<Espia>{
 	}
 
 	@Override
-	public int compareTo(Espia o) {
-		Coordinate coordenadaEspia = o.obtenerCoordenadaEspia();
-		int a;
-		a = Double.compare(this.coordenada.getLat(), coordenadaEspia.getLat());
-		if(a == 0) {
-			a = Double.compare(this.coordenada.getLon(), coordenadaEspia.getLon());
-			if(a == 0) {
-				a = this.nombre.compareTo(o.nombre);
+	public int compareTo(Espia otroEspia) {
+		Coordinate coordenadaEspia = otroEspia.obtenerCoordenadaEspia();
+		int comparacion;
+		comparacion = Double.compare(this.coordenada.getLat(), coordenadaEspia.getLat());
+		if(comparacion == 0) {
+			comparacion = Double.compare(this.coordenada.getLon(), coordenadaEspia.getLon());
+			if(comparacion == 0) {
+				comparacion = this.nombre.compareTo(otroEspia.nombre);
 			}
 		}
-		return a;
+		return comparacion;
 	}
-
-	public ArrayList<Espia> obtenerEspiasCercanos() {
-		return this.espiasCercanos;
-	}
-
 }

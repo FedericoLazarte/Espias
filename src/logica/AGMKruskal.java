@@ -4,42 +4,26 @@ import java.util.ArrayList;
 import java.util.TreeSet;
 
 import excepcion.GrafoNoConexoException;
-import logica.Arista;
-import logica.Grafo;
 
-public class AGMKruscal<T extends Comparable<T>> extends AbstractAGM<T> {
+public class AGMKruskal<T extends Comparable<T>> extends AbstractAGM<T> {
 
-
-	public AGMKruscal(Grafo<T> g) {
+	public AGMKruskal(Grafo<T> g) {
 		super(g);
 	}
 
 	@Override
 	public TreeSet<Arista<T>> aristasDelAGM() {
-		algoritmoAGM();
+		algoritmoAGM(); 
 		return aristasDelAGM;
 	}
 
-
-
-	private void inicializarObjetosUtiles() {
-		adjList = g.listaDeAdyacencias();
-		aristasConExtremoFuera = new TreeSet<>(Arista.aristaComparator());
-		aristasDelAGM = new TreeSet<>();
-		verticesConAristasPotenciales = new ArrayList<>();
-		verticesConAristasPotenciales.add(g.primerVertice());
-	}
-
-	// creo de sería de kruskal
+	// Algoritmo de Kruskal
 	private void algoritmoAGM() {
-
-		if (!g.esConexo()) {
+		if (!grafo.esConexo()) {
 			throw new GrafoNoConexoException();
 		}
-
 		inicializarObjetosUtiles();
-
-		while (verticesConAristasPotenciales.size() != g.tamanio()) {
+		while (verticesConAristasPotenciales.size() != grafo.tamanio()) {
 			agregarAristasConExtremos();
 			Arista<T> aristaMenorPeso = obtenerAristaDeMenorPesoEntreLasPosibles();
 			verticesConAristasPotenciales.add(aristaMenorPeso.obtenerVerticeDestino());
@@ -47,14 +31,19 @@ public class AGMKruscal<T extends Comparable<T>> extends AbstractAGM<T> {
 			descartarAristasQueGenerarianCiclos();
 		}
 	}
-
-	private Arista<T> obtenerAristaDeMenorPesoEntreLasPosibles() {
-		return aristasConExtremoFuera.pollFirst();
+	
+	private void inicializarObjetosUtiles() {
+		listaDeVecinos = grafo.listaDeVecinos();
+		aristasConExtremoFuera = new TreeSet<>(Arista.aristaComparator());
+		aristasDelAGM = new TreeSet<>();
+		verticesConAristasPotenciales = new ArrayList<>();
+		verticesConAristasPotenciales.add(grafo.primerVertice()); // Comenzamos con el primer vértice
 	}
 
+	// Agrega las aristas cuyo extremo está fuera del conjunto de vértices visitados
 	private void agregarAristasConExtremos() {
 		for (T vertice: verticesConAristasPotenciales) {
-			for (Arista<T> arista: adjList.get(vertice)) {
+			for (Arista<T> arista: listaDeVecinos.get(vertice)) {
 				if (!aristasDelAGM.contains(arista) &&
 				!verticesConAristasPotenciales.contains(arista.obtenerVerticeDestino()))
 				{
@@ -62,5 +51,9 @@ public class AGMKruscal<T extends Comparable<T>> extends AbstractAGM<T> {
 				}
 			}
 		}
+	}
+	
+	private Arista<T> obtenerAristaDeMenorPesoEntreLasPosibles() {
+		return aristasConExtremoFuera.pollFirst(); // Extrae la arista de menor peso
 	}
 }

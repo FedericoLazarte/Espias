@@ -1,4 +1,4 @@
-package teset;
+package tests;
 
 import static org.junit.Assert.*;
 import org.junit.Before;
@@ -24,7 +24,7 @@ public class EspiaTest {
     @Test
     public void agregarEspiasCercanos() {
         Espia espiaCercano = new Espia("Agente 009", new Coordinate(34.0522, -118.2437));
-        espia.agregarEspiasCeranos(espiaCercano);
+        espia.agregarEspiasCercanos(espiaCercano);
         assertEquals(1, espia.obtenerEspiasCercanos().size());
         assertEquals("Agente 009", espia.obtenerEspiasCercanos().get(0).obtenerNombreEspia());
     }

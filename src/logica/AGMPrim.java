@@ -3,8 +3,8 @@ package logica;
 import java.util.ArrayList;
 import java.util.TreeSet;
 
-import logica.Arista;
-import logica.Grafo;
+import excepcion.GrafoNoConexoException;
+
 
 public class AGMPrim<T extends Comparable<T>> extends AbstractAGM<T> {
 
@@ -14,17 +14,17 @@ public class AGMPrim<T extends Comparable<T>> extends AbstractAGM<T> {
 
     @Override
     public TreeSet<Arista<T>> aristasDelAGM() {
-        algoritmoAGM(); // Ejecuta el algoritmo para generar el AGM
+        algoritmoAGM(); 
         return aristasDelAGM;
     }
 
     // Algoritmo de Prim
     private void algoritmoAGM() {
-        // Inicializamos las estructuras de datos
+    	if (!grafo.esConexo()) {
+			throw new GrafoNoConexoException();
+		}   	
         inicializarObjetosUtiles();
-
-        // Mientras no tengamos todos los vértices en el AGM
-        while (verticesConAristasPotenciales.size() != g.tamanio()) {
+        while (verticesConAristasPotenciales.size() != grafo.tamanio()) {
             agregarAristasConExtremos();
             Arista<T> aristaMenorPeso = obtenerAristaDeMenorPesoEntreLasPosibles();
 
@@ -39,19 +39,18 @@ public class AGMPrim<T extends Comparable<T>> extends AbstractAGM<T> {
         }
     }
 
-    // Inicializa los objetos necesarios para ejecutar el algoritmo
     private void inicializarObjetosUtiles() {
-        adjList = g.listaDeAdyacencias();
+        listaDeVecinos = grafo.listaDeVecinos();
         aristasConExtremoFuera = new TreeSet<>(Arista.aristaComparator());
         aristasDelAGM = new TreeSet<>();
         verticesConAristasPotenciales = new ArrayList<>();
-        verticesConAristasPotenciales.add(g.primerVertice()); // Comenzamos con el primer vértice
+        verticesConAristasPotenciales.add(grafo.primerVertice()); // Comenzamos con el primer vértice
     }
 
     // Agrega las aristas cuyo extremo está fuera del conjunto de vértices visitados
     private void agregarAristasConExtremos() {
         for (T vertice : verticesConAristasPotenciales) {
-            for (Arista<T> arista : adjList.get(vertice)) {
+            for (Arista<T> arista : listaDeVecinos.get(vertice)) {
                 if (!aristasDelAGM.contains(arista) &&
                     !verticesConAristasPotenciales.contains(arista.obtenerVerticeDestino())) {
                     aristasConExtremoFuera.add(arista); // Agregamos aristas con un vértice no visitado
@@ -60,7 +59,6 @@ public class AGMPrim<T extends Comparable<T>> extends AbstractAGM<T> {
         }
     }
 
-    // Obtiene la arista con el menor peso entre las posibles
     private Arista<T> obtenerAristaDeMenorPesoEntreLasPosibles() {
         return aristasConExtremoFuera.pollFirst(); // Extrae la arista de menor peso
     }

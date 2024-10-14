@@ -18,29 +18,42 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
-import javax.swing.JOptionPane;
 import org.openstreetmap.gui.jmapviewer.Coordinate;
 import org.openstreetmap.gui.jmapviewer.JMapViewer;
 
 import controlador.Controlador;
 import controlador.Controlador.Algoritmo_AGM;
 import logica.Espia;
-import logica.EspiasHarcodeado;
+import logica.EspiasArgentinos;
 
 @SuppressWarnings("serial")
 public class Main extends JFrame{
 
 	private Controlador controlador;
-	private JButton exitButton;
-	private JMapViewer mapViewer;
-	private JTextField valorPesoEntradaUser;
-	JComboBox<Espia> comboBox1;
-	JComboBox<Espia> comboBox2;
+	private JMapViewer mapa;
 	private boolean agmEnPantalla;
-	private JFrame frameParaElegirRelacion;
-	//--------------------nuevo----------------------------
 	private static String direccionArchivo ="src/logica/espias.txt";
-	//-----------------------------------------------------
+	
+	//Frames y paneles
+	private JFrame frameParaElegirRelacion;
+	private JPanel panelDeMapa;
+	private JPanel panelDeBotones;
+	
+	//Elementos del panel de botones
+	private JButton btnAgregarRelacion;
+	private JComboBox<Algoritmo_AGM> comboBoxAlgoritmo;
+	private JButton btnGenerarAGM;
+	private JButton compararAlgoritmos;
+	private JButton cargarDatosEspiasArgentina;
+	private JButton cargarCercanosAleatoriosArgentina;
+	private JButton quitarPuntos;
+	
+	//Elementos del frame para elegir relacion
+	private JComboBox<Espia> comboBox1;
+	private JComboBox<Espia> comboBox2;
+	private JButton exitButton;
+	private JTextField valorPesoEntradaUser;
+	
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -55,41 +68,62 @@ public class Main extends JFrame{
 		});
 	}
 
-	/**
-	 * Create the application.
-	 */
 	public Main() {
 		agmEnPantalla = false;
-		mapViewer = new JMapViewer();
 		controlador = new Controlador(this);
-		initializeUI();
+		interfazGrafica();
 	}
 
-	//cambio!! al metodo de EspiasHarcodeado "EspiasDeArgentina" le pasas el archivo
-	private void agregarEspeciasArgentinos() {
-		for(Espia e : EspiasHarcodeado.EspiasDeArgentina(direccionArchivo)) {
-			nuevoEspia(e);
-		}
+	public JMapViewer getMapViewer() {
+		return mapa;
 	}
 
-	private void agregarPesosAleatorio() {
-		controlador.espiasConPesosAleatorios();
+	public void mostrarAlerta(String mensaje) {
+		JOptionPane.showMessageDialog(null, mensaje);
 	}
-
-	private void initializeUI() {
+	
+	private void interfazGrafica() {
+		//Frame principal
 		setTitle("Diseño de Regiones de un País");
 		setExtendedState(Frame.MAXIMIZED_BOTH);
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-		JPanel buttonPanel = new JPanel();
-		JPanel mapPanel = new JPanel(new BorderLayout());
-		exitButton = new JButton("Salir");
+		//Paneles del frame principal
+		panelDeMapa = new JPanel(new BorderLayout());
+		panelDeBotones = new JPanel();
 
-		// Mapa
-		mapViewer.setZoom(5);
-		mapViewer.setTileSource(new org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource.Mapnik());
-		mapViewer.setDisplayPosition(new Coordinate(-40.6037, -65.3816), 4);
-		mapViewer.addMouseListener(new MouseAdapter() {
+		crearMapa();
+		crearBotones();
+		crearFrameAgregarRelacion();
+		
+		exitButton = new JButton("Salir");
+		exitButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// Cerrar la aplicación
+				System.exit(0);
+			}
+		});
+
+		//Configurar el diseño de la ventana
+		getContentPane().setLayout(new BorderLayout());
+		getContentPane().add(panelDeBotones, BorderLayout.NORTH);
+		getContentPane().add(panelDeMapa, BorderLayout.CENTER);
+	}
+
+	private void crearMapa() {
+		mapa = new JMapViewer();
+		mapa.setZoom(5);
+		mapa.setTileSource(new org.openstreetmap.gui.jmapviewer.tilesources.OsmTileSource.Mapnik());
+		mapa.setDisplayPosition(new Coordinate(-40.6037, -65.3816), 4);
+		
+		eventoMouseAlMapa();
+		
+		panelDeMapa.add(mapa, BorderLayout.CENTER);
+	}
+
+	private void eventoMouseAlMapa() {
+		mapa.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				if (SwingUtilities.isRightMouseButton(e) && e.getClickCount() == 2) {
@@ -99,33 +133,42 @@ public class Main extends JFrame{
 						return;
 					}
 					Point punto = e.getPoint();
-					Coordinate c = (Coordinate) mapViewer.getPosition(punto);
+					Coordinate c = (Coordinate) mapa.getPosition(punto);
 					Espia espia = new Espia(nombreEspia, c);
 					nuevoEspia(espia);
 				}
 			}
 		});
-		mapPanel.add(mapViewer, BorderLayout.CENTER);
+	}
 
+	private void nuevoEspia(Espia espia) {
+		controlador.agregarNuevoEspia(espia);
+		
+		//Se actualizan los comboboxs
+		comboBox1.addItem(espia);
+		comboBox1.setSelectedItem(espia);
+		actualizarComboBox2();
+		if (agmEnPantalla) {
+			controlador.mostrarMapaConGrafo();
+		}
+		agmEnPantalla = false;
+	}
+	
+	private void crearBotones() {
 		JLabel labelAyuda = new JLabel("Doble clic derecho para una nueva locación");
-		buttonPanel.add(labelAyuda);
+		panelDeBotones.add(labelAyuda);
 		labelAyuda.setHorizontalAlignment(SwingConstants.LEFT);
+		crearBtnAgregarRelacion();
+		crearComboBoxAlgoritmo();
+		crearBotonAGM();
+		crearBotonCompararAlgm();
+		crearBotonesEspiasArgentinos();
+		crearBotonBorrarEspias();
+	}
 
-		comboBox1 = new JComboBox<>();
-		buttonPanel.add(comboBox1);
-		comboBox1.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				actualizarComboBox2();
-			}
-		});
-
-		comboBox2 = new JComboBox<>();
-		buttonPanel.add(comboBox2);
-
-		// AGREGO PESO A RELACION AL MAPA
-		JButton btnAgregarRelacion = new JButton("Agregar relación");
-		buttonPanel.add(btnAgregarRelacion);
+	private void crearBtnAgregarRelacion() {
+		btnAgregarRelacion = new JButton("Agregar relación");
+		panelDeBotones.add(btnAgregarRelacion);
 
 		btnAgregarRelacion.addActionListener(new ActionListener() {
 			@Override
@@ -137,184 +180,188 @@ public class Main extends JFrame{
 				}
 			}
 		});
-
-
-		exitButton.addActionListener(new ActionListener() {
+	}
+	
+	private void crearComboBoxAlgoritmo() {
+		comboBoxAlgoritmo = new JComboBox<>();
+		comboBoxAlgoritmo.addItem(Algoritmo_AGM.KRUSKAL);
+		comboBoxAlgoritmo.addItem(Algoritmo_AGM.PRIM);
+		comboBoxAlgoritmo.setBounds(10,10,80,20);
+	    panelDeBotones.add(comboBoxAlgoritmo);
+	}
+	
+	private void crearBotonAGM() {
+		btnGenerarAGM = new JButton("AGM");
+		
+		btnGenerarAGM.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// Cerrar la aplicación
-				System.exit(0);
+				Algoritmo_AGM seleccionAlgoritmo = (Algoritmo_AGM)comboBoxAlgoritmo.getSelectedItem();
+				if (controlador.dibujarAGM(seleccionAlgoritmo)) {
+				agmEnPantalla = true;
+				}
 			}
 		});
 
-		// Configurar el diseño de la ventana
-				getContentPane().setLayout(new BorderLayout());
-				getContentPane().add(buttonPanel, BorderLayout.NORTH);
-
-				JComboBox<Algoritmo_AGM> comboBoxSelector = new JComboBox<>();
-				comboBoxSelector.addItem(Algoritmo_AGM.KRUSKAL);
-				comboBoxSelector.addItem(Algoritmo_AGM.PRIM);
-				comboBoxSelector.setBounds(10,10,80,20);
-			    buttonPanel.add(comboBoxSelector);
-
-//REVISA ACÁ CON EL PROFE
-				JButton btnGenerarAGM = new JButton("AGM");
-				btnGenerarAGM.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						Algoritmo_AGM seleccionAlgoritmo = (Algoritmo_AGM)comboBoxSelector.getSelectedItem();
-						if (controlador.dibujarAGM(seleccionAlgoritmo)) {
-						agmEnPantalla = true;
-					//	quitarAristasAGM.setVisible(true);
-						}
-					}
-				});
-
-				buttonPanel.add(btnGenerarAGM);
-
-				getContentPane().add(mapPanel, BorderLayout.CENTER);
-
-				crearFrameAgregarRelacion();
-
-				JButton cargarDatosEspiasArgentina = new JButton("Espías Argentinos");
-				JButton cargarCercanosAleatoriosArgentina = new JButton("Relaciones aleatorias espías Argentinos");
-				buttonPanel.add(cargarCercanosAleatoriosArgentina);
-				buttonPanel.add(cargarDatosEspiasArgentina);
-				cargarCercanosAleatoriosArgentina.setVisible(false);
-
-				cargarDatosEspiasArgentina.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						agregarEspeciasArgentinos();
-						cargarCercanosAleatoriosArgentina.setVisible(true);
-						buttonPanel.remove(cargarDatosEspiasArgentina);
-						buttonPanel.repaint();
-					}
-				});
-
-				cargarCercanosAleatoriosArgentina.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						agregarPesosAleatorio();
-						buttonPanel.remove(cargarCercanosAleatoriosArgentina);
-						buttonPanel.repaint();
-					}
-				});
-
-				JButton quitarPuntos = new JButton("Borrar todo");
-				buttonPanel.add(quitarPuntos);
-				quitarPuntos .addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						quitarTodosLosPuntos();
-						buttonPanel.add(cargarDatosEspiasArgentina);
-						buttonPanel.add(cargarCercanosAleatoriosArgentina);
-						cargarCercanosAleatoriosArgentina.setVisible(false);
-						repaint();
-					}
-				});
-				
-				JButton compararAlgoritmos = new JButton("Comparar Algoritmos");
-				buttonPanel.add(compararAlgoritmos);
-				// compararAlgoritmos.setVisible(false);
-				compararAlgoritmos.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						try {
-							long resultados[] = controlador.compararAlgoritmos();
-							JOptionPane.showMessageDialog(buttonPanel, "Kruskal = " + resultados[0] + " | Prim = " + resultados[1]);							
-						}catch(Exception ex) {
-							System.out.println(ex.getStackTrace());
-							JOptionPane.showMessageDialog(buttonPanel,"debe cargar los espias y sus aristas primero");
-						}
-					}
-				});
-
+		panelDeBotones.add(btnGenerarAGM);
 	}
-
-	// previene que se pueda añadir arista entre mismo vertice
-		private void actualizarComboBox2() {
-			comboBox2.removeAllItems();
-			for (int i = 0; i < comboBox1.getItemCount(); i++) {
-				Espia e = comboBox1.getItemAt(i);
-				if (!e.equals(comboBox1.getSelectedItem())) {
-					comboBox2.addItem(e);
+	
+	private void crearBotonCompararAlgm() {
+		compararAlgoritmos = new JButton("Comparar Algoritmos");
+		panelDeBotones.add(compararAlgoritmos);
+		compararAlgoritmos.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				try {
+					long resultados[] = controlador.compararAlgoritmos();
+					JOptionPane.showMessageDialog(panelDeBotones, "Kruskal = " + resultados[0] + " | Prim = " + resultados[1]);							
+				}catch(Exception ex) {
+					System.out.println(ex.getStackTrace());
+					JOptionPane.showMessageDialog(panelDeBotones,"debe cargar los espias y sus aristas primero");
 				}
 			}
-		}
+		});
+		
+	}
+	
+	private void crearBotonesEspiasArgentinos() {
+		crearBtnEspiasArgentinos();
+		crearBtnRelacionesAleatorias();
+		cargarCercanosAleatoriosArgentina.setVisible(false);
+	}
 
-		private void crearFrameAgregarRelacion() {
-			frameParaElegirRelacion = new JFrame();
-			JPanel panel = new JPanel();
-			panel.add(comboBox1);
-			panel.add(comboBox2);
-			JLabel lblNewLabel_2 = new JLabel("       Indique peso:");
-			panel.add(lblNewLabel_2);
-			valorPesoEntradaUser = new JTextField();
-			panel.add(valorPesoEntradaUser);
-			valorPesoEntradaUser.setColumns(10);
+	private void crearBtnEspiasArgentinos() {
+		cargarDatosEspiasArgentina = new JButton("Espías Argentinos");
+		cargarDatosEspiasArgentina.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				agregarEspiasArgentinos();
+				cargarCercanosAleatoriosArgentina.setVisible(true);
+				panelDeBotones.remove(cargarDatosEspiasArgentina);
+				panelDeBotones.repaint();
+			}
+		});
+		panelDeBotones.add(cargarDatosEspiasArgentina);
+	}
 
-			JButton cargarRelacion = new JButton("Cargar relación");
-			panel.add(cargarRelacion);
-			cargarRelacion.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					cargarNuevaArista();
-				}
-			});
-			frameParaElegirRelacion.setBounds(100,100,550,200);
-			frameParaElegirRelacion.add(panel);
-			frameParaElegirRelacion.setVisible(false);
+	private void crearBtnRelacionesAleatorias() {
+		cargarCercanosAleatoriosArgentina = new JButton("Relaciones aleatorias espías Argentinos");
+		cargarCercanosAleatoriosArgentina.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				agregarPesosAleatorio();
+				panelDeBotones.remove(cargarCercanosAleatoriosArgentina);
+				panelDeBotones.repaint();
+			}
+		});
+		panelDeBotones.add(cargarCercanosAleatoriosArgentina);
+	}
+	
+	private void crearBotonBorrarEspias() {
+		quitarPuntos = new JButton("Borrar todo");
+		panelDeBotones.add(quitarPuntos);
+		quitarPuntos .addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				quitarTodosLosPuntos();
+				panelDeBotones.add(cargarDatosEspiasArgentina);
+				panelDeBotones.add(cargarCercanosAleatoriosArgentina);
+				cargarCercanosAleatoriosArgentina.setVisible(false);
+				repaint();
+			}
+		});
+		
+	}
+	
+	private void crearFrameAgregarRelacion() {
+		frameParaElegirRelacion = new JFrame();
+		JPanel panel = new JPanel();
+		
+		crearComboboxs();
+		panel.add(comboBox1);
+		panel.add(comboBox2);
+		
+		JLabel lblNewLabel_2 = new JLabel("       Indique peso:");
+		panel.add(lblNewLabel_2);
+		valorPesoEntradaUser = new JTextField();
+		panel.add(valorPesoEntradaUser);
+		valorPesoEntradaUser.setColumns(10);
 
-		}
+		JButton cargarRelacion = new JButton("Cargar relación");
+		panel.add(cargarRelacion);
+		cargarRelacion.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cargarNuevaArista();
+			}
+		});
+		frameParaElegirRelacion.setBounds(100,100,550,200);
+		frameParaElegirRelacion.add(panel);
+		frameParaElegirRelacion.setVisible(false);
 
-		private void quitarTodosLosPuntos() {
-			controlador.quitarTodosLosPuntos();
-			mapViewer.removeAllMapMarkers();
-			mapViewer.removeAllMapPolygons();
-			comboBox1.removeAllItems();
-			actualizarComboBox2();
-		}
+	}
+	
+	private void crearComboboxs() {
+		comboBox1 = new JComboBox<>();
+		panelDeBotones.add(comboBox1);
+		comboBox1.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				actualizarComboBox2();
+			}
+		});
 
-
-		private int cantidadEspias() {
-			return comboBox1.getItemCount();
-		}
-
-
-		public JMapViewer getMapViewer() {
-			return mapViewer;
-		}
-
-		public void mostrarAlerta(String mensaje) {
-			JOptionPane.showMessageDialog(null, mensaje);
-		}
-
-		private void nuevoEspia(Espia espia) {
-			controlador.agrgarNuevoEspia(espia);
-			comboBox1.addItem(espia);
-			comboBox1.setSelectedItem(espia);
-			actualizarComboBox2();
+		comboBox2 = new JComboBox<>();
+		panelDeBotones.add(comboBox2);
+	}
+	
+	private void cargarNuevaArista() {
+		try {
 			if (agmEnPantalla) {
 				controlador.mostrarMapaConGrafo();
 			}
-			agmEnPantalla = false;
+			double peso = Double.valueOf(valorPesoEntradaUser.getText());
+			Espia e1 = (Espia) comboBox1.getSelectedItem();
+			Espia e2 = (Espia) comboBox2.getSelectedItem();
+			controlador.nuevaArista(e1, e2, peso);
+		} catch (NumberFormatException err) {
+			mostrarAlerta("Error: no ingresó un valor numérico");
+		} finally {
+			valorPesoEntradaUser.setText(null);
 		}
+	}
+	
+	private void quitarTodosLosPuntos() {
+		controlador.quitarTodosLosPuntos();
+		mapa.removeAllMapMarkers();
+		mapa.removeAllMapPolygons();
+		comboBox1.removeAllItems();
+		actualizarComboBox2();
+	}
+	
+	private void agregarEspiasArgentinos() {
+		for(Espia e : EspiasArgentinos.EspiasDeArgentina(direccionArchivo)) {
+			nuevoEspia(e);
+		}
+	}
 
-
-		private void cargarNuevaArista() {
-			try {
-				if (agmEnPantalla) {
-					controlador.mostrarMapaConGrafo();
-				}
-				double peso = Double.valueOf(valorPesoEntradaUser.getText());
-				Espia e1 = (Espia) comboBox1.getSelectedItem();
-				Espia e2 = (Espia) comboBox2.getSelectedItem();
-				controlador.nuevaArista(e1, e2, peso);
-			} catch (NumberFormatException err) {
-				mostrarAlerta("Error: no ingresó un valor numérico");
-			} finally {
-				valorPesoEntradaUser.setText(null);
+	private void agregarPesosAleatorio() {
+		controlador.espiasConPesosAleatorios();
+	}
+	
+	// previene que se pueda añadir arista entre mismo vertice
+	private void actualizarComboBox2() {
+		comboBox2.removeAllItems();
+		for (int i = 0; i < comboBox1.getItemCount(); i++) {
+			Espia e = comboBox1.getItemAt(i);
+			//No se agrega el espia que se encuentra en el combobox1
+			if (!e.equals(comboBox1.getSelectedItem())) {
+				comboBox2.addItem(e);
 			}
 		}
+	}
+
+	private int cantidadEspias() {
+		return comboBox1.getItemCount();
+	}
 }
